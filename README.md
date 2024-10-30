@@ -16,3 +16,5 @@ Run the app on an emulator or physical device:
 flutter run
 
 To install the app directly use this link : https://i.diawi.com/odAVKM
+
+To check the location marking as fav use branch location_fav
