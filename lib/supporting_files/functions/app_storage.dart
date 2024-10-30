@@ -25,6 +25,7 @@ class AppStorage {
   static Future<bool> isFavorite(String item) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> existingList = prefs.getStringList(favoriteListKey) ?? [];
-    return existingList.contains(item);
+    return existingList
+        .any((element) => element.toLowerCase() == item.toLowerCase());
   }
 }

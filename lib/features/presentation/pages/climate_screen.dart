@@ -74,7 +74,13 @@ class _ClimateScreenState extends State<ClimateScreen> {
                             var favList = await AppStorage.fetchFavoriteList();
                             if (context.mounted) {
                               AppFunctions.showCustomBottomSheet(
-                                  context, FavoriteList(favList: favList));
+                                  context,
+                                  FavoriteList(
+                                    favList: favList,
+                                    onFavSelection: (cityName) {
+                                      searchClimateData(cityName);
+                                    },
+                                  ));
                             }
                           },
                           isFavorite: (fav) {

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 
 class FavoriteList extends StatelessWidget {
   final List<String> favList;
-  const FavoriteList({super.key, required this.favList});
+  final Function(String) onFavSelection;
+  const FavoriteList(
+      {super.key, required this.favList, required this.onFavSelection});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class FavoriteList extends StatelessWidget {
               : ListView.builder(
                   itemCount: favList.length,
                   itemBuilder: (context, index) => ListTile(
+                        onTap: () => onFavSelection(favList[index]),
                         trailing: const Icon(
                           Icons.arrow_forward_ios_rounded,
                           color: AppColors.appTextColor,
