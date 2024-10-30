@@ -2,11 +2,15 @@ import 'package:climate_app/features/data/climate_repository_impl.dart';
 import 'package:climate_app/features/domain/entities/climate_model.dart';
 import 'package:climate_app/features/domain/use_cases/climate_usecases.dart';
 import 'package:climate_app/features/presentation/widgets/climate_app_bar.dart';
+import 'package:climate_app/features/presentation/widgets/favorite_list.dart';
 import 'package:climate_app/features/presentation/widgets/forecast_list.dart';
+import 'package:climate_app/features/presentation/widgets/header_components.dart';
 import 'package:climate_app/features/presentation/widgets/weather_condition.dart';
 import 'package:climate_app/features/presentation/widgets/weather_header.dart';
 import 'package:climate_app/supporting_files/app_globals/app_colors.dart';
 import 'package:climate_app/supporting_files/app_globals/app_string.dart';
+import 'package:climate_app/supporting_files/functions/app_functions.dart';
+import 'package:climate_app/supporting_files/functions/app_storage.dart';
 import 'package:flutter/material.dart';
 
 class ClimateScreen extends StatefulWidget {
@@ -20,13 +24,17 @@ class _ClimateScreenState extends State<ClimateScreen> {
   final ClimateUsecases climateUsecases =
       ClimateUsecases(ClimateRepositoryImpl());
   Future<ClimateModel?>? climateFuture;
+  var city = "jaipur";
+  var isFav = false;
   @override
   void initState() {
     super.initState();
-    searchClimateData("jaipur");
+    searchClimateData(city);
   }
 
-  void searchClimateData(String cityName) {
+  void searchClimateData(String cityName) async {
+    city = cityName;
+    isFav = await AppStorage.isFavorite(cityName);
     setState(() {
       climateFuture = climateUsecases.fetchClimateDetails(context, cityName);
     });
@@ -60,6 +68,26 @@ class _ClimateScreenState extends State<ClimateScreen> {
                     return ListView(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       children: [
+                        HeaderComponents(
+                          isFav: isFav,
+                          openFavoriteList: () async {
+                            var favList = await AppStorage.fetchFavoriteList();
+                            if (context.mounted) {
+                              AppFunctions.showCustomBottomSheet(
+                                  context, FavoriteList(favList: favList));
+                            }
+                          },
+                          isFavorite: (fav) {
+                            if (fav) {
+                              AppStorage.appendToFavoriteList(city);
+                              isFav = true;
+                            } else {
+                              AppStorage.removeFavoriteList(city);
+                              isFav = false;
+                            }
+                            setState(() {});
+                          },
+                        ),
                         WeatherHeader(
                             currentLocation: climateDetails?.location,
                             currentTemp: climateDetails?.current),
